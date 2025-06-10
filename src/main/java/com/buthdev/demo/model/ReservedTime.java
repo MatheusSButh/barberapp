@@ -1,5 +1,7 @@
 package com.buthdev.demo.model;
 
+import java.time.LocalDateTime;
+
 import com.buthdev.demo.model.enums.ReservedTimeStatus;
 
 import jakarta.persistence.Entity;
@@ -23,6 +25,9 @@ public class ReservedTime {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	private LocalDateTime date;
+	private String service;
 	
 	private ReservedTimeStatus status;
 	
