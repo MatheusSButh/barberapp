@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buthdev.demo.dtos.request.UserRequestDTO;
+import com.buthdev.demo.dtos.response.UserResponseDTO;
 import com.buthdev.demo.model.User;
 import com.buthdev.demo.services.UserService;
 
@@ -25,7 +26,7 @@ public class UserController {
 	UserService userService;
 	
 	@GetMapping
-	public ResponseEntity<List<User>> findAll() {
+	public ResponseEntity<List<UserResponseDTO>> findAll() {
 		return ResponseEntity.ok().body(userService.findAll());
 	}
 	

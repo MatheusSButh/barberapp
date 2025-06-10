@@ -1,5 +1,6 @@
 package com.buthdev.demo.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -23,8 +24,16 @@ public class UserService {
 		return userRepository.save(user);
 	}
 	
-	public List<User> findAll(){
-		return userRepository.findAll();
+	public List<UserResponseDTO> findAll(){
+		List<User> users = userRepository.findAll();
+		List<UserResponseDTO> usersDto = new ArrayList<>();
+		
+		for(User user : users) {
+			UserResponseDTO userDto = convertToDTO(user);
+			usersDto.add(userDto);
+		}
+		
+		return usersDto;
 	}
 	
 	public User findById(Long id) {
@@ -45,8 +54,9 @@ public class UserService {
 	}
 	
 	private UserResponseDTO convertToDTO(User user) {
-		BeanUtils.copyProperties(user, UserResponseDTO.class);
-		
-		
+		UserResponseDTO userDto = new UserResponseDTO();
+		BeanUtils.copyProperties(user, userDto);
+	
+		return userDto;
 	}
 }

@@ -1,7 +1,14 @@
 package com.buthdev.demo.dtos.response;
 
-public record UserResponseDTO(String name, String phone) {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-	public public UserResponseDTO() {
-	}
+@Getter
+@Setter
+@NoArgsConstructor
+public class UserResponseDTO {
+
+	private String name;
+	private String phone;
 }
