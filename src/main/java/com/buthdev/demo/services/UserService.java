@@ -26,6 +26,14 @@ public class UserService {
 		return userRepository.findAll();
 	}
 	
+	public User findById(Long id) {
+		return userRepository.findById(id).orElseThrow(() -> new NullPointerException());
+	}
+	
+	public void deleteUser(Long id) {
+		findById(id);
+		userRepository.deleteById(id);
+	}
 	
 	private User convertToUser(UserRequestDTO userDTO) {
 		User user = new User();
