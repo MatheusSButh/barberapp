@@ -1,0 +1,27 @@
+package com.buthdev.demo.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
+import com.buthdev.demo.model.ReservedTime;
+import com.buthdev.demo.services.ReservedTimeService;
+
+@RestController
+@RequestMapping(value = "schedule")
+public class ReservedTimeController {
+
+	@Autowired
+	ReservedTimeService reservedTimeService;
+	
+	@PostMapping
+	public ResponseEntity<ReservedTime> createReservedTime(ReservedTimeRequestDTO reservedTimeDTO) {
+		reservedTimeService.createrReservedTime(reservedTimeDTO);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+}
