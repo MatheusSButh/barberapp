@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
+import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
 import com.buthdev.demo.model.ReservedTime;
-import com.buthdev.demo.model.User;
 import com.buthdev.demo.services.ReservedTimeService;
 
 @RestController
@@ -31,7 +31,7 @@ public class ReservedTimeController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<ReservedTime>> findAll() {
+	public ResponseEntity<List<ReservedTimeResponseDTO>> findAll() {
 		return ResponseEntity.ok().body(reservedTimeService.findAll());
 	}
 }

@@ -3,12 +3,16 @@ package com.buthdev.demo.services;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
+import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
+import com.buthdev.demo.dtos.response.UserResponseDTO;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.model.enums.ReservedTimeStatus;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
@@ -23,6 +27,7 @@ public class ReservedTimeService {
 	UserService userService;
 	
 	DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 	
 	public ReservedTime createrReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
 		ReservedTime reservedTime = convertToReservedTime(reservedTimeDto);
@@ -30,8 +35,16 @@ public class ReservedTimeService {
 		return reservedTimeRepository.save(reservedTime);
 	}
 	
-	public List<ReservedTime> findAll(){
-		return reservedTimeRepository.findAll();
+	public List<ReservedTimeResponseDTO> findAll(){
+		List<ReservedTime> reservedTimes = reservedTimeRepository.findAll();
+		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
+		
+		for(ReservedTime reservedTime : reservedTimes) {
+			ReservedTimeResponseDTO reservedTimeDto = convertToReservedTimeDto(reservedTime);
+			reservedTimeDtos.add(reservedTimeDto);
+		}
+		
+		return reservedTimeDtos;
 	}
 	
 	public List<ReservedTime> findAllReservedTimeByDate(LocalDate date){
@@ -48,5 +61,13 @@ public class ReservedTimeService {
 		reservedTime.setUser(userService.findById(reservedTimeDTO.userId()));
 		
 		return reservedTime;
+	}
+	
+	private ReservedTimeResponseDTO convertToReservedTimeDto(ReservedTime reservedTime) {
+		ReservedTimeResponseDTO reservedTimeDto = new ReservedTimeResponseDTO();
+		
+		BeanUtils.copyProperties(reservedTime, reservedTimeDto);
+		
+		return reservedTimeDto;
 	}
 }

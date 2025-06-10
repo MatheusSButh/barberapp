@@ -53,7 +53,7 @@ public class UserService {
 		return user;
 	}
 	
-	private UserResponseDTO convertToDTO(User user) {
+	protected UserResponseDTO convertToDTO(User user) {
 		UserResponseDTO userDto = new UserResponseDTO();
 		BeanUtils.copyProperties(user, userDto);
 	
