@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.buthdev.demo.dtos.request.UserRequestDTO;
+import com.buthdev.demo.dtos.response.UserResponseDTO;
 import com.buthdev.demo.model.User;
 import com.buthdev.demo.repositories.UserRepository;
 
@@ -41,5 +42,11 @@ public class UserService {
 		BeanUtils.copyProperties(userDTO, user);
 		
 		return user;
+	}
+	
+	private UserResponseDTO convertToDTO(User user) {
+		BeanUtils.copyProperties(user, UserResponseDTO.class);
+		
+		
 	}
 }

@@ -1,8 +1,9 @@
 package com.buthdev.demo.services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,14 @@ public class ReservedTimeService {
 		ReservedTime reservedTime = convertToReservedTime(reservedTimeDto);
 		
 		return reservedTimeRepository.save(reservedTime);
+	}
+	
+	public List<ReservedTime> findAll(){
+		return reservedTimeRepository.findAll();
+	}
+	
+	public List<ReservedTime> findAllReservedTimeByDate(LocalDate date){
+		return reservedTimeRepository.findAllReservedTimeByDate(date);
 	}
 	
 	
