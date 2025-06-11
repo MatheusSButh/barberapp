@@ -1,6 +1,5 @@
 package com.buthdev.demo.services;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,14 +37,8 @@ public class ReservedTimeService {
 	
 	public List<ReservedTimeResponseDTO> findAll(){
 		List<ReservedTime> reservedTimes = reservedTimeRepository.findAll();
-		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
 		
-		for(ReservedTime reservedTime : reservedTimes) {
-			ReservedTimeResponseDTO reservedTimeDto = convertToReservedTimeDto(reservedTime);
-			reservedTimeDtos.add(reservedTimeDto);
-		}
-		
-		return reservedTimeDtos;
+		return convertToReservedTimeDto(reservedTimes);
 	}
 	
 	public ReservedTime findById(Long id) {
@@ -59,14 +52,8 @@ public class ReservedTimeService {
 	
 	public List<ReservedTimeResponseDTO> findAllReservedTimeByDate(String date){
 		List<ReservedTime> reservedTimes = reservedTimeRepository.findAllReservedTimeByDate(LocalDate.parse(date, sdf1));
-		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
 		
-		for(ReservedTime reservedTime : reservedTimes) {
-			ReservedTimeResponseDTO reservedTimeDto = convertToReservedTimeDto(reservedTime);
-			reservedTimeDtos.add(reservedTimeDto);
-		}
-		
-		return reservedTimeDtos;
+		return convertToReservedTimeDto(reservedTimes);
 	}
 	
 	
@@ -81,13 +68,18 @@ public class ReservedTimeService {
 		return reservedTime;
 	}
 	
-	private ReservedTimeResponseDTO convertToReservedTimeDto(ReservedTime reservedTime) {
+	private List<ReservedTimeResponseDTO> convertToReservedTimeDto(List<ReservedTime> reservedTimes) {
 		ReservedTimeResponseDTO reservedTimeDto = new ReservedTimeResponseDTO();
+		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
 		
-		BeanUtils.copyProperties(reservedTime, reservedTimeDto);
-		reservedTimeDto.setDate(reservedTime.getDate().format(sdf));
-		reservedTimeDto.setUser(userService.convertToDTO(reservedTime.getUser()));
+		for(ReservedTime reservedTime : reservedTimes) {
+			BeanUtils.copyProperties(reservedTime, reservedTimeDto);
+			reservedTimeDto.setDate(reservedTime.getDate().format(sdf));
+			reservedTimeDto.setUser(userService.convertToDTO(reservedTime.getUser()));
+			
+			reservedTimeDtos.add(reservedTimeDto);
+		}
 		
-		return reservedTimeDto;
+		return reservedTimeDtos;
 	}
 }

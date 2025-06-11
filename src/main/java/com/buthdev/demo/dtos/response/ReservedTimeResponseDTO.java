@@ -1,7 +1,5 @@
 package com.buthdev.demo.dtos.response;
 
-import java.time.LocalDateTime;
-
 import com.buthdev.demo.model.enums.ReservedTimeStatus;
 
 import lombok.Getter;
