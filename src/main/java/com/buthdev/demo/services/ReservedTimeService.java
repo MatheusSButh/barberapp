@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
-import com.buthdev.demo.dtos.response.UserResponseDTO;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.model.enums.ReservedTimeStatus;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
@@ -47,6 +46,15 @@ public class ReservedTimeService {
 		return reservedTimeDtos;
 	}
 	
+	public ReservedTime findById(Long id) {
+		return reservedTimeRepository.findById(id).orElseThrow(() -> new NullPointerException());
+	}
+	
+	public void deleteUser(Long id) {
+		findById(id);
+		reservedTimeRepository.deleteById(id);
+	}
+	
 	public List<ReservedTime> findAllReservedTimeByDate(LocalDate date){
 		return reservedTimeRepository.findAllReservedTimeByDate(date);
 	}
@@ -67,6 +75,7 @@ public class ReservedTimeService {
 		ReservedTimeResponseDTO reservedTimeDto = new ReservedTimeResponseDTO();
 		
 		BeanUtils.copyProperties(reservedTime, reservedTimeDto);
+		reservedTimeDto.setUser(userService.convertToDTO(reservedTime.getUser()));
 		
 		return reservedTimeDto;
 	}
