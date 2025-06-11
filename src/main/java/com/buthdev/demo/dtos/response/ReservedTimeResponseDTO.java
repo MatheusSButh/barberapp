@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ReservedTimeResponseDTO {
 
-	private LocalDateTime date;
+	private String date;
 	private String service;
 	private ReservedTimeStatus status;
 	private UserResponseDTO user;

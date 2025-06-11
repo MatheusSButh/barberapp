@@ -35,7 +35,4 @@ public class ReservedTime {
 	@JoinColumn(name = "user_id")
 	private User user;
 	
-	@ManyToOne
-	@JoinColumn(name = "schedule_id")
-	private Schedule schedule;
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
@@ -55,8 +56,16 @@ public class ReservedTimeService {
 		reservedTimeRepository.deleteById(id);
 	}
 	
-	public List<ReservedTime> findAllReservedTimeByDate(LocalDate date){
-		return reservedTimeRepository.findAllReservedTimeByDate(date);
+	public List<ReservedTimeResponseDTO> findAllReservedTimeByDate(@RequestParam LocalDate date){
+		List<ReservedTime> reservedTimes = reservedTimeRepository.findAllReservedTimeByDate(date);
+		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
+		
+		for(ReservedTime reservedTime : reservedTimes) {
+			ReservedTimeResponseDTO reservedTimeDto = convertToReservedTimeDto(reservedTime);
+			reservedTimeDtos.add(reservedTimeDto);
+		}
+		
+		return reservedTimeDtos;
 	}
 	
 	
@@ -75,6 +84,7 @@ public class ReservedTimeService {
 		ReservedTimeResponseDTO reservedTimeDto = new ReservedTimeResponseDTO();
 		
 		BeanUtils.copyProperties(reservedTime, reservedTimeDto);
+		reservedTimeDto.setDate(reservedTime.getDate().format(sdf));
 		reservedTimeDto.setUser(userService.convertToDTO(reservedTime.getUser()));
 		
 		return reservedTimeDto;

@@ -1,5 +1,6 @@
 package com.buthdev.demo.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
@@ -37,6 +39,11 @@ public class ReservedTimeController {
 		reservedTimeService.deleteUser(id);
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+	
+	@GetMapping(value = "date")
+	public ResponseEntity<List<ReservedTimeResponseDTO>> findAllReservedTimeByDate(@RequestParam String date) {
+		return ResponseEntity.ok().body(reservedTimeService.findAllReservedTimeByDate(LocalDate.parse(date)));
 	}
 	
 	@GetMapping
