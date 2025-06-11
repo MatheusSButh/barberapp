@@ -1,6 +1,5 @@
 package com.buthdev.demo.controllers;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class ReservedTimeController {
 	
 	@GetMapping(value = "date")
 	public ResponseEntity<List<ReservedTimeResponseDTO>> findAllReservedTimeByDate(@RequestParam String date) {
-		return ResponseEntity.ok().body(reservedTimeService.findAllReservedTimeByDate(LocalDate.parse(date)));
+		return ResponseEntity.ok().body(reservedTimeService.findAllReservedTimeByDate(date));
 	}
 	
 	@GetMapping

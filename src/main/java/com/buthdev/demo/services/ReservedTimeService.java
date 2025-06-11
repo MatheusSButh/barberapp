@@ -1,5 +1,6 @@
 package com.buthdev.demo.services;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +10,6 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
@@ -27,6 +27,7 @@ public class ReservedTimeService {
 	UserService userService;
 	
 	DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+	DateTimeFormatter sdf1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	
 	public ReservedTime createrReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
@@ -56,8 +57,8 @@ public class ReservedTimeService {
 		reservedTimeRepository.deleteById(id);
 	}
 	
-	public List<ReservedTimeResponseDTO> findAllReservedTimeByDate(@RequestParam LocalDate date){
-		List<ReservedTime> reservedTimes = reservedTimeRepository.findAllReservedTimeByDate(date);
+	public List<ReservedTimeResponseDTO> findAllReservedTimeByDate(String date){
+		List<ReservedTime> reservedTimes = reservedTimeRepository.findAllReservedTimeByDate(LocalDate.parse(date, sdf1));
 		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
 		
 		for(ReservedTime reservedTime : reservedTimes) {
