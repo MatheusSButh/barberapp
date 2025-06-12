@@ -11,6 +11,7 @@ import com.buthdev.demo.dtos.request.UserRequestDTO;
 import com.buthdev.demo.dtos.response.UserResponseDTO;
 import com.buthdev.demo.model.User;
 import com.buthdev.demo.repositories.UserRepository;
+import com.buthdev.demo.services.converters.UserConverter;
 
 @Service
 public class UserService {
@@ -18,8 +19,11 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private UserConverter userConverter;
+	
 	public User createUser(UserRequestDTO userDTO) {
-		User user = convertToUser(userDTO);
+		User user = userConverter.convertToUser(userDTO);
 		
 		return userRepository.save(user);
 	}
@@ -29,7 +33,7 @@ public class UserService {
 		List<UserResponseDTO> usersDto = new ArrayList<>();
 		
 		for(User user : users) {
-			UserResponseDTO userDto = convertToDTO(user);
+			UserResponseDTO userDto = userConverter.convertToDTO(user);
 			usersDto.add(userDto);
 		}
 		
@@ -43,20 +47,5 @@ public class UserService {
 	public void deleteUser(Long id) {
 		findById(id);
 		userRepository.deleteById(id);
-	}
-	
-	
-	private User convertToUser(UserRequestDTO userDTO) {
-		User user = new User();
-		BeanUtils.copyProperties(userDTO, user);
-		
-		return user;
-	}
-	
-	protected UserResponseDTO convertToDTO(User user) {
-		UserResponseDTO userDto = new UserResponseDTO();
-		BeanUtils.copyProperties(user, userDto);
-	
-		return userDto;
 	}
 }

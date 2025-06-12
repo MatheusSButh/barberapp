@@ -17,6 +17,7 @@ import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.model.enums.ReservedTimeStatus;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
+import com.buthdev.demo.services.converters.UserConverter;
 
 @Service
 public class ScheduleService {
@@ -26,6 +27,9 @@ public class ScheduleService {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	private UserConverter userConverter;
 	
 	private final LocalTime startOfDay = LocalTime.of(10, 0);
 	private final LocalTime endOfDay = LocalTime.of(18, 0);
@@ -118,7 +122,7 @@ public class ScheduleService {
 			
 			BeanUtils.copyProperties(reservedTime, reservedTimeDto);
 			reservedTimeDto.setDate(reservedTime.getDate().format(sdf));
-			reservedTimeDto.setUser(userService.convertToDTO(reservedTime.getUser()));
+			reservedTimeDto.setUser(userConverter.convertToDTO(reservedTime.getUser()));
 			
 			reservedTimeDtos.add(reservedTimeDto);
 		}
