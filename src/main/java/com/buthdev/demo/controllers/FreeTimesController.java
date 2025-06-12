@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buthdev.demo.dtos.response.FreeTimesResponseDTO;
-import com.buthdev.demo.services.FreeTimeService;
+import com.buthdev.demo.services.ScheduleService;
 
 @RestController
 @RequestMapping(value = "userSchedule")
 public class FreeTimesController {
 
 	@Autowired
-	private FreeTimeService freeTimeService;
+	private ScheduleService scheduleService;
 	
 	@GetMapping(value = "times")
 	public ResponseEntity<List<FreeTimesResponseDTO>> findAllFreeTimes(@RequestParam String date) {
-		return ResponseEntity.ok().body(freeTimeService.findAllFreeTimes(date));
+		return ResponseEntity.ok().body(scheduleService.findAllFreeTimes(date));
 	}
 }

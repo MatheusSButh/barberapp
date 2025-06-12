@@ -17,36 +17,36 @@ import org.springframework.web.bind.annotation.RestController;
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
 import com.buthdev.demo.model.ReservedTime;
-import com.buthdev.demo.services.ReservedTimeService;
+import com.buthdev.demo.services.ScheduleService;
 
 @RestController
 @RequestMapping(value = "schedule")
 public class ReservedTimeController {
 
 	@Autowired
-	ReservedTimeService reservedTimeService;
+	ScheduleService scheduleService;
 	
 	@PostMapping
 	public ResponseEntity<ReservedTime> createReservedTime(@RequestBody ReservedTimeRequestDTO reservedTimeDTO) {
-		reservedTimeService.createrReservedTime(reservedTimeDTO);
+		scheduleService.createrReservedTime(reservedTimeDTO);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-		reservedTimeService.deleteUser(id);
+		scheduleService.deleteUser(id);
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
 	@GetMapping(value = "date")
 	public ResponseEntity<List<ReservedTimeResponseDTO>> findAllReservedTimeByDate(@RequestParam String date) {
-		return ResponseEntity.ok().body(reservedTimeService.findAllReservedTimeByDate(date));
+		return ResponseEntity.ok().body(scheduleService.findAllReservedTimeByDate(date));
 	}
 	
 	@GetMapping
 	public ResponseEntity<List<ReservedTimeResponseDTO>> findAll() {
-		return ResponseEntity.ok().body(reservedTimeService.findAll());
+		return ResponseEntity.ok().body(scheduleService.findAll());
 	}
 }
