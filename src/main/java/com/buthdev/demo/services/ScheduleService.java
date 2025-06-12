@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.FreeTimesResponseDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
+import com.buthdev.demo.exceptions.InvalidDateException;
 import com.buthdev.demo.exceptions.NotFoundException;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
@@ -67,20 +69,25 @@ public class ScheduleService {
 	public List<FreeTimesResponseDTO> findAllFreeTimes(String date) {
 		List<String> freeTimes = new ArrayList<>();
 		List<LocalTime> busyTimes = new ArrayList<>();
+
+		try {
+			List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
+			List<LocalTime> timeSlots = generateTimeSlots();
 		
-		List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
-		List<LocalTime> timeSlots = generateTimeSlots();
-		
-		for(ReservedTimeResponseDTO dto : reservedTimes) {
-			LocalDateTime reservedTime = LocalDateTime.parse(dto.getDate(), sdf);
+			for(ReservedTimeResponseDTO dto : reservedTimes) {
+				LocalDateTime reservedTime = LocalDateTime.parse(dto.getDate(), sdf);
 			
-			busyTimes.add(reservedTime.toLocalTime());
-		}
-		
-		for(LocalTime slot : timeSlots) {
-			if(!busyTimes.contains(slot)) {
-				freeTimes.add(slot.format(sdf2));
+				busyTimes.add(reservedTime.toLocalTime());
 			}
+		
+			for(LocalTime slot : timeSlots) {
+				if(!busyTimes.contains(slot)) {
+					freeTimes.add(slot.format(sdf2));
+				}
+			}
+		}
+		catch(RuntimeException e) {
+			throw new InvalidDateException(0);
 		}
 		
 		List<FreeTimesResponseDTO> freeTimesDto = convertToFreeTimesDto(freeTimes);
