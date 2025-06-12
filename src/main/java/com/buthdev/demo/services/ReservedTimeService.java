@@ -69,10 +69,11 @@ public class ReservedTimeService {
 	}
 	
 	private List<ReservedTimeResponseDTO> convertToReservedTimeDto(List<ReservedTime> reservedTimes) {
-		ReservedTimeResponseDTO reservedTimeDto = new ReservedTimeResponseDTO();
 		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
 		
 		for(ReservedTime reservedTime : reservedTimes) {
+			ReservedTimeResponseDTO reservedTimeDto = new ReservedTimeResponseDTO();
+			
 			BeanUtils.copyProperties(reservedTime, reservedTimeDto);
 			reservedTimeDto.setDate(reservedTime.getDate().format(sdf));
 			reservedTimeDto.setUser(userService.convertToDTO(reservedTime.getUser()));
