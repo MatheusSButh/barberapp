@@ -19,7 +19,7 @@ public class FreeTimesController {
 	@Autowired
 	private ScheduleService scheduleService;
 	
-	@GetMapping(value = "times")
+	@GetMapping(value = "/times")
 	public ResponseEntity<List<FreeTimesResponseDTO>> findAllFreeTimes(@RequestParam String date) {
 		return ResponseEntity.ok().body(scheduleService.findAllFreeTimes(date));
 	}

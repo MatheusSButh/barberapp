@@ -40,7 +40,7 @@ public class ReservedTimeController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
-	@GetMapping(value = "date")
+	@GetMapping(value = "/date")
 	public ResponseEntity<List<ReservedTimeResponseDTO>> findAllReservedTimeByDate(@RequestParam String date) {
 		return ResponseEntity.ok().body(scheduleService.findAllReservedTimeByDate(date));
 	}

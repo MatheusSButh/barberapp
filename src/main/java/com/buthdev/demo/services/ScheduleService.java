@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +14,8 @@ import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.FreeTimesResponseDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
 import com.buthdev.demo.model.ReservedTime;
-import com.buthdev.demo.model.enums.ReservedTimeStatus;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
-import com.buthdev.demo.services.converters.UserConverter;
+import com.buthdev.demo.services.converters.ReservedTimeConverter;
 
 @Service
 public class ScheduleService {
@@ -27,9 +25,9 @@ public class ScheduleService {
 	
 	@Autowired
 	UserService userService;
-	
-	@Autowired
-	private UserConverter userConverter;
+
+	@Autowired 
+	private ReservedTimeConverter reservedTimeConverter;
 	
 	private final LocalTime startOfDay = LocalTime.of(10, 0);
 	private final LocalTime endOfDay = LocalTime.of(18, 0);
@@ -39,7 +37,7 @@ public class ScheduleService {
 	DateTimeFormatter sdf2 = DateTimeFormatter.ofPattern("HH:mm");
 
 	public ReservedTime createrReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
-		ReservedTime reservedTime = convertToReservedTime(reservedTimeDto);
+		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto);
 		
 		return reservedTimeRepository.save(reservedTime);
 	}
@@ -47,7 +45,7 @@ public class ScheduleService {
 	public List<ReservedTimeResponseDTO> findAll(){
 		List<ReservedTime> reservedTimes = reservedTimeRepository.findAll();
 		
-		return convertToReservedTimeDto(reservedTimes);
+		return reservedTimeConverter.convertToReservedTimeDto(reservedTimes);
 	}
 	
 	public ReservedTime findById(Long id) {
@@ -62,7 +60,7 @@ public class ScheduleService {
 	public List<ReservedTimeResponseDTO> findAllReservedTimeByDate(String date){
 		List<ReservedTime> reservedTimes = reservedTimeRepository.findAllReservedTimeByDate(LocalDate.parse(date, sdf1));
 		
-		return convertToReservedTimeDto(reservedTimes);
+		return reservedTimeConverter.convertToReservedTimeDto(reservedTimes);
 	}
 	
 	public List<FreeTimesResponseDTO> findAllFreeTimes(String date) {
@@ -101,33 +99,6 @@ public class ScheduleService {
 		}
 		
 		return currentSlots;
-	}
-	
-	private ReservedTime convertToReservedTime(ReservedTimeRequestDTO reservedTimeDTO) {
-		ReservedTime reservedTime = new ReservedTime();
-		
-		reservedTime.setDate(LocalDateTime.parse(reservedTimeDTO.date(), sdf));
-		reservedTime.setService(reservedTimeDTO.service());
-		reservedTime.setStatus(ReservedTimeStatus.VALID);
-		reservedTime.setUser(userService.findById(reservedTimeDTO.userId()));
-		
-		return reservedTime;
-	}
-	
-	private List<ReservedTimeResponseDTO> convertToReservedTimeDto(List<ReservedTime> reservedTimes) {
-		List<ReservedTimeResponseDTO> reservedTimeDtos = new ArrayList<>();
-		
-		for(ReservedTime reservedTime : reservedTimes) {
-			ReservedTimeResponseDTO reservedTimeDto = new ReservedTimeResponseDTO();
-			
-			BeanUtils.copyProperties(reservedTime, reservedTimeDto);
-			reservedTimeDto.setDate(reservedTime.getDate().format(sdf));
-			reservedTimeDto.setUser(userConverter.convertToDTO(reservedTime.getUser()));
-			
-			reservedTimeDtos.add(reservedTimeDto);
-		}
-		
-		return reservedTimeDtos;
 	}
 	
 	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<String> freeTimes) {
