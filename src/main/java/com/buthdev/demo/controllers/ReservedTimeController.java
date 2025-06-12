@@ -28,14 +28,14 @@ public class ReservedTimeController {
 	
 	@PostMapping
 	public ResponseEntity<ReservedTime> createReservedTime(@RequestBody ReservedTimeRequestDTO reservedTimeDTO) {
-		scheduleService.createrReservedTime(reservedTimeDTO);
+		scheduleService.createReservedTime(reservedTimeDTO);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-		scheduleService.deleteUser(id);
+		scheduleService.deleteReservedTime(id);
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

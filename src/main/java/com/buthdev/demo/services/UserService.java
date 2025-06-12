@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.buthdev.demo.dtos.request.UserRequestDTO;
 import com.buthdev.demo.dtos.response.UserResponseDTO;
+import com.buthdev.demo.exceptions.NotFoundException;
 import com.buthdev.demo.model.User;
 import com.buthdev.demo.repositories.UserRepository;
 import com.buthdev.demo.services.converters.UserConverter;
@@ -40,7 +41,7 @@ public class UserService {
 	}
 	
 	public User findById(Long id) {
-		return userRepository.findById(id).orElseThrow(() -> new NullPointerException());
+		return userRepository.findById(id).orElseThrow(() -> new NotFoundException());
 	}
 	
 	public void deleteUser(Long id) {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.FreeTimesResponseDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
+import com.buthdev.demo.exceptions.NotFoundException;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
 import com.buthdev.demo.services.converters.ReservedTimeConverter;
@@ -36,7 +37,7 @@ public class ScheduleService {
 	DateTimeFormatter sdf1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	DateTimeFormatter sdf2 = DateTimeFormatter.ofPattern("HH:mm");
 
-	public ReservedTime createrReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
+	public ReservedTime createReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
 		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto);
 		
 		return reservedTimeRepository.save(reservedTime);
@@ -49,10 +50,10 @@ public class ScheduleService {
 	}
 	
 	public ReservedTime findById(Long id) {
-		return reservedTimeRepository.findById(id).orElseThrow(() -> new NullPointerException());
+		return reservedTimeRepository.findById(id).orElseThrow(() -> new NotFoundException());
 	}
 	
-	public void deleteUser(Long id) {
+	public void deleteReservedTime(Long id) {
 		findById(id);
 		reservedTimeRepository.deleteById(id);
 	}
