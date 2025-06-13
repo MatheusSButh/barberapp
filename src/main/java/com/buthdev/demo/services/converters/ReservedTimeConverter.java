@@ -2,6 +2,7 @@ package com.buthdev.demo.services.converters;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
+import com.buthdev.demo.exceptions.InvalidDateException;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.model.enums.ReservedTimeStatus;
 import com.buthdev.demo.services.UserService;
@@ -29,7 +31,12 @@ public class ReservedTimeConverter {
 	public ReservedTime convertToReservedTime(ReservedTimeRequestDTO reservedTimeDTO) {
 		ReservedTime reservedTime = new ReservedTime();
 		
+		try {
 		reservedTime.setDate(LocalDateTime.parse(reservedTimeDTO.date(), sdf));
+		}
+		catch(DateTimeParseException e) {
+			throw new InvalidDateException(0);
+		}
 		reservedTime.setService(reservedTimeDTO.service());
 		reservedTime.setStatus(ReservedTimeStatus.VALID);
 		reservedTime.setUser(userService.findById(reservedTimeDTO.userId()));

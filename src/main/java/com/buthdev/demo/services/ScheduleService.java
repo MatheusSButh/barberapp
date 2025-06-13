@@ -15,6 +15,7 @@ import com.buthdev.demo.dtos.response.FreeTimesResponseDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
 import com.buthdev.demo.exceptions.InvalidDateException;
 import com.buthdev.demo.exceptions.NotFoundException;
+import com.buthdev.demo.exceptions.UnavailableDateException;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
 import com.buthdev.demo.services.converters.ReservedTimeConverter;
@@ -31,6 +32,7 @@ public class ScheduleService {
 	@Autowired 
 	private ReservedTimeConverter reservedTimeConverter;
 
+	private final LocalTime startOfDay = LocalTime.of(10, 0);
 	private final LocalTime endOfDay = LocalTime.of(18, 0);
 	
 	DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -40,8 +42,10 @@ public class ScheduleService {
 	public ReservedTime createReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
 		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto);
 		
-		if (reservedTimeRepository.existsByDate(reservedTime.getDate())) {
-            throw new InvalidDateException(0);
+		LocalTime hour = reservedTime.getDate().toLocalTime();
+		
+		if (reservedTimeRepository.existsByDate(reservedTime.getDate()) || hour.isBefore(startOfDay) || hour.isAfter(endOfDay)) {
+            throw new UnavailableDateException();
         }
 		
 		return reservedTimeRepository.save(reservedTime);
