@@ -32,11 +32,12 @@ public class ReservedTimeConverter {
 		ReservedTime reservedTime = new ReservedTime();
 		
 		try {
-		reservedTime.setDate(LocalDateTime.parse(reservedTimeDTO.date(), sdf));
-		}
+			reservedTime.setDate(LocalDateTime.parse(reservedTimeDTO.date(), sdf));
+		} 
 		catch(DateTimeParseException e) {
 			throw new InvalidDateException(0);
 		}
+		
 		reservedTime.setService(reservedTimeDTO.service());
 		reservedTime.setStatus(ReservedTimeStatus.VALID);
 		reservedTime.setUser(userService.findById(reservedTimeDTO.userId()));

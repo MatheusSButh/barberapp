@@ -67,7 +67,14 @@ public class ScheduleService {
 	}
 	
 	public List<ReservedTimeResponseDTO> findAllReservedTimeByDate(String date){
-		List<ReservedTime> reservedTimes = reservedTimeRepository.findAllReservedTimeByDate(LocalDate.parse(date, sdf1));
+		List<ReservedTime> reservedTimes = new ArrayList<>();
+		
+		try {
+			reservedTimes = reservedTimeRepository.findAllReservedTimeByDate(LocalDate.parse(date, sdf1));
+		}
+		catch(RuntimeException e) {
+			throw new InvalidDateException(0);
+		}
 		
 		return reservedTimeConverter.convertToReservedTimeDto(reservedTimes);
 	}
@@ -75,15 +82,9 @@ public class ScheduleService {
 	public List<FreeTimesResponseDTO> findAllFreeTimes(String date) {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
 		
-		try {
-			List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
+		List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
 	
-			freeTimesDto = convertToFreeTimesDto(verifyFreeTime(reservedTimes));
-		}
-		
-		catch(RuntimeException e) {
-			throw new InvalidDateException(0);
-		}
+		freeTimesDto = convertToFreeTimesDto(verifyFreeTime(reservedTimes));
 		
 		return freeTimesDto;
 	}
