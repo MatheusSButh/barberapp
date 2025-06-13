@@ -81,7 +81,6 @@ public class ScheduleService {
 	
 	public List<FreeTimesResponseDTO> findAllFreeTimes(String date) {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
-		
 		List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
 	
 		freeTimesDto = convertToFreeTimesDto(verifyFreeTime(reservedTimes));
@@ -91,7 +90,6 @@ public class ScheduleService {
 	
 	
 	private List<String> verifyFreeTime(List<ReservedTimeResponseDTO> reservedTimes) {
-		
 		List<LocalTime> timeSlots = generateTimeSlots();
 		List<String> freeTimes = new ArrayList<>();
 		List<LocalTime> busyTimes = new ArrayList<>();
@@ -99,7 +97,9 @@ public class ScheduleService {
 		for(ReservedTimeResponseDTO dto : reservedTimes) {
 			LocalDateTime reservedTime = LocalDateTime.parse(dto.getDate(), sdf);
 			
-			busyTimes.add(reservedTime.toLocalTime());
+			if(reservedTimeRepository.existsByDate(reservedTime)) {
+				busyTimes.add(reservedTime.toLocalTime());
+			}
 		}
 		
 		for(LocalTime slot : timeSlots) {
