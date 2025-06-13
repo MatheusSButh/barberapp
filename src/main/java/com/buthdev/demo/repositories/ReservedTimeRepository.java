@@ -1,6 +1,7 @@
 package com.buthdev.demo.repositories;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface ReservedTimeRepository extends JpaRepository<ReservedTime, Long
 	
 	@Query("SELECT r FROM ReservedTime r WHERE CAST(r.date AS date) = :date")
 	public List<ReservedTime> findAllReservedTimeByDate(@Param("date") LocalDate date);
+	
+	boolean existsByDate(LocalDateTime date);
 }

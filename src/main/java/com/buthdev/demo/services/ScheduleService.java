@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +30,7 @@ public class ScheduleService {
 
 	@Autowired 
 	private ReservedTimeConverter reservedTimeConverter;
-	
-	private final LocalTime startOfDay = LocalTime.of(10, 0);
+
 	private final LocalTime endOfDay = LocalTime.of(18, 0);
 	
 	DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -41,6 +39,10 @@ public class ScheduleService {
 
 	public ReservedTime createReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
 		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto);
+		
+		if (reservedTimeRepository.existsByDate(reservedTime.getDate())) {
+            throw new InvalidDateException(0);
+        }
 		
 		return reservedTimeRepository.save(reservedTime);
 	}
