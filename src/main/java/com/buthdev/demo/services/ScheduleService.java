@@ -67,35 +67,43 @@ public class ScheduleService {
 	}
 	
 	public List<FreeTimesResponseDTO> findAllFreeTimes(String date) {
-		List<String> freeTimes = new ArrayList<>();
-		List<LocalTime> busyTimes = new ArrayList<>();
-
+		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
+		
 		try {
 			List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
-			List<LocalTime> timeSlots = generateTimeSlots();
-		
-			for(ReservedTimeResponseDTO dto : reservedTimes) {
-				LocalDateTime reservedTime = LocalDateTime.parse(dto.getDate(), sdf);
-			
-				busyTimes.add(reservedTime.toLocalTime());
-			}
-		
-			for(LocalTime slot : timeSlots) {
-				if(!busyTimes.contains(slot)) {
-					freeTimes.add(slot.format(sdf2));
-				}
-			}
+	
+			freeTimesDto = convertToFreeTimesDto(verifyFreeTime(reservedTimes));
 		}
+		
 		catch(RuntimeException e) {
 			throw new InvalidDateException(0);
 		}
-		
-		List<FreeTimesResponseDTO> freeTimesDto = convertToFreeTimesDto(freeTimes);
 		
 		return freeTimesDto;
 	}
 	
 	
+	private List<String> verifyFreeTime(List<ReservedTimeResponseDTO> reservedTimes) {
+		
+		List<LocalTime> timeSlots = generateTimeSlots();
+		List<String> freeTimes = new ArrayList<>();
+		List<LocalTime> busyTimes = new ArrayList<>();
+		
+		for(ReservedTimeResponseDTO dto : reservedTimes) {
+			LocalDateTime reservedTime = LocalDateTime.parse(dto.getDate(), sdf);
+			
+			busyTimes.add(reservedTime.toLocalTime());
+		}
+		
+		for(LocalTime slot : timeSlots) {
+			if(!busyTimes.contains(slot)) {
+				freeTimes.add(slot.format(sdf2));
+			}
+		}
+		
+		return freeTimes;
+	}
+
 	private List<LocalTime> generateTimeSlots() {
 		List<LocalTime> currentSlots = new ArrayList<>();
 		LocalTime currentSlot = LocalTime.of(10, 0);
