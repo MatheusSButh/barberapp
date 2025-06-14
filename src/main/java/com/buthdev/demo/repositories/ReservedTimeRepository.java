@@ -17,5 +17,7 @@ public interface ReservedTimeRepository extends JpaRepository<ReservedTime, Long
 	@Query("SELECT r FROM ReservedTime r WHERE CAST(r.date AS date) = :date")
 	public List<ReservedTime> findAllReservedTimeByDate(@Param("date") LocalDate date);
 	
+	public List<ReservedTime> findAllReservedTimeByDateBefore(LocalDateTime date);
+	
 	boolean existsByDate(LocalDateTime date);
 }
