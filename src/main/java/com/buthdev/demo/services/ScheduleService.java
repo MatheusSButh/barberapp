@@ -44,7 +44,7 @@ public class ScheduleService {
 		
 		LocalTime hour = reservedTime.getDate().toLocalTime();
 		
-		if (reservedTimeRepository.existsByDate(reservedTime.getDate()) || hour.isBefore(startOfDay) || hour.isAfter(endOfDay)) {
+		if (reservedTimeRepository.existsByDate(reservedTime.getDate()) || hour.isBefore(startOfDay) || hour.isAfter(endOfDay) || reservedTime.getDate().isBefore(LocalDateTime.now())) {
             throw new UnavailableDateException();
         }
 		
@@ -96,10 +96,8 @@ public class ScheduleService {
 		
 		for(ReservedTimeResponseDTO dto : reservedTimes) {
 			LocalDateTime reservedTime = LocalDateTime.parse(dto.getDate(), sdf);
-			
-			if(reservedTimeRepository.existsByDate(reservedTime)) {
-				busyTimes.add(reservedTime.toLocalTime());
-			}
+		
+			busyTimes.add(reservedTime.toLocalTime());
 		}
 		
 		for(LocalTime slot : timeSlots) {
