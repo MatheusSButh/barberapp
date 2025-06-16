@@ -33,7 +33,7 @@ public class ScheduleService {
 	private ReservedTimeConverter reservedTimeConverter;
 
 	private final LocalTime startOfDay = LocalTime.of(10, 0);
-	private final LocalTime endOfDay = LocalTime.of(18, 0);
+	private final LocalTime endOfDay = LocalTime.of(17, 59);
 	
 	DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 	DateTimeFormatter sdf1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -44,7 +44,7 @@ public class ScheduleService {
 		
 		LocalTime hour = reservedTime.getDate().toLocalTime();
 		
-		if (reservedTimeRepository.existsByDate(reservedTime.getDate()) || hour.isBefore(startOfDay) || hour.isAfter(endOfDay) || reservedTime.getDate().isBefore(LocalDateTime.now())) {
+		if (reservedTimeRepository.existsByDate(reservedTime.getDate()) || hour.isBefore(startOfDay) || hour.isAfter(endOfDay) || reservedTime.getDate().isBefore(LocalDateTime.now()) || !verifyFreeTime(reservedTime)) {
             throw new UnavailableDateException();
         }
 		
@@ -89,13 +89,13 @@ public class ScheduleService {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
 		List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
 	
-		freeTimesDto = convertToFreeTimesDto(verifyFreeTime(reservedTimes));
+		freeTimesDto = convertToFreeTimesDto(getFreeTimes(reservedTimes));
 		
 		return freeTimesDto;
 	}
 	
 	
-	private List<String> verifyFreeTime(List<ReservedTimeResponseDTO> reservedTimes) {
+	private List<String> getFreeTimes(List<ReservedTimeResponseDTO> reservedTimes) {
 		List<LocalTime> timeSlots = generateTimeSlots();
 		List<String> freeTimes = new ArrayList<>();
 		List<LocalTime> busyTimes = new ArrayList<>();
@@ -126,6 +126,21 @@ public class ScheduleService {
 		}
 		
 		return currentSlots;
+	}
+	
+	private boolean verifyFreeTime(ReservedTime reservedTime) {
+		LocalDateTime date = reservedTime.getDate();
+		LocalTime time = date.toLocalTime();
+		
+		List<FreeTimesResponseDTO> freeTimes = findAllFreeTimes(reservedTime.getDate().format(sdf1));
+		
+		for(FreeTimesResponseDTO ft : freeTimes) {
+			if(ft.getTime().equals(time.format(sdf2))) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<String> freeTimes) {
