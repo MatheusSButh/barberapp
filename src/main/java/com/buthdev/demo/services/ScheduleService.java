@@ -32,7 +32,6 @@ public class ScheduleService {
 	@Autowired 
 	private ReservedTimeConverter reservedTimeConverter;
 
-	private final LocalTime startOfDay = LocalTime.of(10, 0);
 	private final LocalTime endOfDay = LocalTime.of(17, 59);
 	
 	DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -42,9 +41,7 @@ public class ScheduleService {
 	public ReservedTime createReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
 		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto);
 		
-		LocalTime hour = reservedTime.getDate().toLocalTime();
-		
-		if (reservedTimeRepository.existsByDate(reservedTime.getDate()) || hour.isBefore(startOfDay) || hour.isAfter(endOfDay) || reservedTime.getDate().isBefore(LocalDateTime.now()) || !verifyFreeTime(reservedTime)) {
+		if (!verifyFreeTime(reservedTime)) {
             throw new UnavailableDateException();
         }
 		
@@ -134,8 +131,8 @@ public class ScheduleService {
 		
 		List<FreeTimesResponseDTO> freeTimes = findAllFreeTimes(reservedTime.getDate().format(sdf1));
 		
-		for(FreeTimesResponseDTO ft : freeTimes) {
-			if(ft.getTime().equals(time.format(sdf2))) {
+		for(FreeTimesResponseDTO freeTime : freeTimes) {
+			if(freeTime.getTime().equals(time.format(sdf2))) {
 				return true;
 			}
 		}
