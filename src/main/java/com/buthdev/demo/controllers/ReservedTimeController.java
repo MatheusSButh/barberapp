@@ -45,8 +45,13 @@ public class ReservedTimeController {
 		return ResponseEntity.ok().body(scheduleService.findAllReservedTimeByDate(date));
 	}
 	
-	@GetMapping
+	@GetMapping(value = "/all")
 	public ResponseEntity<List<ReservedTimeResponseDTO>> findAll() {
 		return ResponseEntity.ok().body(scheduleService.findAll());
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<ReservedTimeResponseDTO>> findAllValidReservedTime() {
+		return ResponseEntity.ok().body(scheduleService.findAllValidReservedTime());
 	}
 }

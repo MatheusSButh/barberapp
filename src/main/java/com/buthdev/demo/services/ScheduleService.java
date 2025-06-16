@@ -57,6 +57,12 @@ public class ScheduleService {
 		return reservedTimeConverter.convertToReservedTimeDto(reservedTimes);
 	}
 	
+	public List<ReservedTimeResponseDTO> findAllValidReservedTime(){
+		List<ReservedTime> reservedTimes = reservedTimeRepository.findAllValidReservedTime();
+		
+		return reservedTimeConverter.convertToReservedTimeDto(reservedTimes);
+	}
+	
 	public ReservedTime findById(Long id) {
 		return reservedTimeRepository.findById(id).orElseThrow(() -> new NotFoundException());
 	}

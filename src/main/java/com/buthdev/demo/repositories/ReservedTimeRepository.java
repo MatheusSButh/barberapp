@@ -19,5 +19,8 @@ public interface ReservedTimeRepository extends JpaRepository<ReservedTime, Long
 	
 	public List<ReservedTime> findAllReservedTimeByDateBefore(LocalDateTime date);
 	
+	@Query("SELECT r FROM ReservedTime r WHERE status = 0")
+	public List <ReservedTime> findAllValidReservedTime();
+	
 	boolean existsByDate(LocalDateTime date);
 }
