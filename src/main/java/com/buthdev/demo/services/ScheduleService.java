@@ -40,8 +40,8 @@ public class ScheduleService {
 
 	public ReservedTime createReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
 		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto);
-		
-		if (!verifyFreeTime(reservedTime)) {
+
+		if (!verifyFreeTime(reservedTime) || LocalDateTime.parse(reservedTimeDto.date(), sdf).isBefore(LocalDateTime.now())) {
             throw new UnavailableDateException();
         }
 		
@@ -85,7 +85,7 @@ public class ScheduleService {
 	public List<FreeTimesResponseDTO> findAllFreeTimes(String date) {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
 		List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
-	
+		
 		freeTimesDto = convertToFreeTimesDto(getFreeTimes(reservedTimes));
 		
 		return freeTimesDto;
