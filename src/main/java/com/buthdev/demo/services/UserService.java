@@ -22,9 +22,15 @@ public class UserService {
 	@Autowired
 	private UserConverter userConverter;
 	
-	public User createUser(UserRequestDTO userDTO) {
-		User user = userConverter.convertToUser(userDTO);
+	public User createUser(UserRequestDTO userDto) {
+		User user = userConverter.convertToUser(userDto);
 		
+		return userRepository.save(user);
+	}
+	
+	public User updateUser(UserRequestDTO userDto, Long id) {
+		User user = findById(id);
+		userConverter.convertToUser(userDto);
 		return userRepository.save(user);
 	}
 	
