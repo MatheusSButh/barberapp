@@ -15,4 +15,5 @@ public class ReservedTimeResponseDTO {
 	private String service;
 	private ReservedTimeStatus status;
 	private UserResponseDTO user;
+	private BarberResponseDTO barber;
 }

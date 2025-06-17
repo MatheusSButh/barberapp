@@ -16,7 +16,9 @@ import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
 import com.buthdev.demo.exceptions.InvalidDateException;
 import com.buthdev.demo.exceptions.NotFoundException;
 import com.buthdev.demo.exceptions.UnavailableDateException;
+import com.buthdev.demo.model.Barber;
 import com.buthdev.demo.model.ReservedTime;
+import com.buthdev.demo.repositories.BarberRepository;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
 import com.buthdev.demo.services.converters.ReservedTimeConverter;
 
@@ -28,6 +30,12 @@ public class ScheduleService {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired 
+	private BarberRepository barberRepository;
+	
+	@Autowired 
+	private BarberService barberService;
 
 	@Autowired 
 	private ReservedTimeConverter reservedTimeConverter;
@@ -84,21 +92,28 @@ public class ScheduleService {
 	
 	public List<FreeTimesResponseDTO> findAllFreeTimes(String date) {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
-		List<ReservedTimeResponseDTO> reservedTimes = findAllReservedTimeByDate(date);
+		List<Barber> barbers = barberRepository.findAll();
 		
-		freeTimesDto = convertToFreeTimesDto(getFreeTimes(reservedTimes));
+		for(Barber barber : barbers) {
+			List<ReservedTime> barberReservedTimes = reservedTimeRepository.findAllReservedTimeByBarberIdAndDate(barber.getId() ,LocalDate.parse(date, sdf1));
+		
+			List<FreeTimesResponseDTO> freeTimes = getFreeTimes(barberReservedTimes, barber.getId());
+			
+			freeTimesDto.addAll(convertToFreeTimesDto(freeTimes));	
+		}
 		
 		return freeTimesDto;
 	}
 	
 	
-	private List<String> getFreeTimes(List<ReservedTimeResponseDTO> reservedTimes) {
+	private List<FreeTimesResponseDTO> getFreeTimes(List<ReservedTime> reservedTimes, Long id) {
 		List<LocalTime> timeSlots = generateTimeSlots();
 		List<String> freeTimes = new ArrayList<>();
 		List<LocalTime> busyTimes = new ArrayList<>();
+		List<FreeTimesResponseDTO> barberFreeTimes = new ArrayList<>();
 		
-		for(ReservedTimeResponseDTO dto : reservedTimes) {
-			LocalDateTime reservedTime = LocalDateTime.parse(dto.getDate(), sdf);
+		for(ReservedTime rt : reservedTimes) {
+			LocalDateTime reservedTime = rt.getDate();
 		
 			busyTimes.add(reservedTime.toLocalTime());
 		}
@@ -108,8 +123,14 @@ public class ScheduleService {
 				freeTimes.add(slot.format(sdf2));
 			}
 		}
+		Barber barber = barberService.findById(id);
 		
-		return freeTimes;
+		for(String freeTime : freeTimes) {
+			FreeTimesResponseDTO freeTimeResponseDto = new FreeTimesResponseDTO(freeTime, barber.getName());
+			barberFreeTimes.add(freeTimeResponseDto);
+		}
+		
+		return barberFreeTimes;
 	}
 
 	private List<LocalTime> generateTimeSlots() {
@@ -132,7 +153,7 @@ public class ScheduleService {
 		List<FreeTimesResponseDTO> freeTimes = findAllFreeTimes(reservedTime.getDate().format(sdf1));
 		
 		for(FreeTimesResponseDTO freeTime : freeTimes) {
-			if(freeTime.getTime().equals(time.format(sdf2))) {
+			if(freeTime.getTime().equals(time.format(sdf2)) && reservedTime.getBarber().getName().equals(freeTime.getBarberName())) {
 				return true;
 			}
 		}
@@ -140,13 +161,14 @@ public class ScheduleService {
 		return false;
 	}
 	
-	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<String> freeTimes) {
+	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<FreeTimesResponseDTO> freeTimes) {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
 		
-		for(String freeTime : freeTimes) {
+		for(FreeTimesResponseDTO freeTime : freeTimes) {
 			FreeTimesResponseDTO freeTimeDto = new FreeTimesResponseDTO();
 			
-			freeTimeDto.setTime(freeTime);
+			freeTimeDto.setTime(freeTime.getTime());
+			freeTimeDto.setBarberName(freeTime.getBarberName());
 			freeTimesDto.add(freeTimeDto);
 		}
 		
