@@ -1,15 +1,14 @@
 package com.buthdev.demo.model;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-import com.buthdev.demo.model.enums.ReservedTimeStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,22 +19,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservedTime {
-	
+public class Barber {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	private LocalDateTime date;
-	private String service;
+	private String name;
+	private String phone;
 	
-	private ReservedTimeStatus status;
-	
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
-	
-	@ManyToOne
-	@JoinColumn(name = "barber_id")
-	private Barber barber;
+	@JsonIgnore
+	@OneToMany(mappedBy = "barber")
+	private List<ReservedTime> reservedTime;
 }
