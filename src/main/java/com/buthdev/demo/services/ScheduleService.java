@@ -146,26 +146,17 @@ public class ScheduleService {
 		
 		List<FreeTimesResponseDTO> freeTimes = findAllFreeTimes(reservedTime.getDate().format(sdf1));
 		
-		for(FreeTimesResponseDTO freeTime : freeTimes) {
-			if(freeTime.getTime().equals(time.format(sdf2)) && reservedTime.getBarber().getName().equals(freeTime.getBarberName())) {
-				return true;
-			}
-		}
-		
-		return false;
+		return freeTimes.stream()
+		.anyMatch(freeTime -> freeTime.getTime().equals(time.format(sdf2)) && reservedTime.getBarber().getName().equals(freeTime.getBarberName()));
 	}
 	
 	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<FreeTimesResponseDTO> freeTimes) {
-		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
 		
-		for(FreeTimesResponseDTO freeTime : freeTimes) {
-			FreeTimesResponseDTO freeTimeDto = new FreeTimesResponseDTO();
-			
-			freeTimeDto.setTime(freeTime.getTime());
-			freeTimeDto.setBarberName(freeTime.getBarberName());
-			freeTimesDto.add(freeTimeDto);
-		}
-		
-		return freeTimesDto;
+		return freeTimes.stream()
+		.map(freeTime -> {
+			FreeTimesResponseDTO freeTimeDto = new FreeTimesResponseDTO(freeTime.getTime(), freeTime.getBarberName());
+
+			return freeTimeDto;
+		}).collect(Collectors.toList());
 	}
 }
