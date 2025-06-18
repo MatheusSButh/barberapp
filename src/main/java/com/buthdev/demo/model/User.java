@@ -1,6 +1,11 @@
 package com.buthdev.demo.model;
 
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,16 +26,38 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements UserDetails {
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private String name;
-	private String phone;
+	private String email;
+	private String password;
+	
+	private UserRole role;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	private List<ReservedTime> reservedTime;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if(this.role == UserRole.ADMIN) {
+			return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_BASIC"));
+		}
+		return List.of(new SimpleGrantedAuthority("ROLE_BASIC"));
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
 }

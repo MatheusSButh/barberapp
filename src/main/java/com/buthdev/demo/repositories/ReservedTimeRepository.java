@@ -16,17 +16,19 @@ import com.buthdev.demo.model.ReservedTime;
 public interface ReservedTimeRepository extends JpaRepository<ReservedTime, Long> {
 	
 	@Query("SELECT r FROM ReservedTime r WHERE CAST(r.date AS date) = :date")
-	public List<ReservedTime> findAllReservedTimeByDate(@Param("date") LocalDate date);
+	List<ReservedTime> findAllReservedTimeByDate(@Param("date") LocalDate date);
 	
 	@Query("SELECT r FROM ReservedTime r WHERE r.barber.id = :barberId AND CAST(r.date AS date) = :date ORDER BY r.date ASC")
     List<ReservedTime> findAllReservedTimeByBarberIdAndDate(@Param("barberId") Long barberId, @Param("date") LocalDate date);
 	
+	@Query("SELECT r FROM ReservedTime r WHERE status = 0")
+	List <ReservedTime> findAllValidReservedTime();
+	
 	Optional<ReservedTime> findReservedTimeByBarberIdAndDate(Long id, LocalDateTime date);
 	
-	public List<ReservedTime> findAllReservedTimeByDateBefore(LocalDateTime date);
+	List<ReservedTime> findAllReservedTimeByDateBefore(LocalDateTime date);
 	
-	@Query("SELECT r FROM ReservedTime r WHERE status = 0")
-	public List <ReservedTime> findAllValidReservedTime();
+	ReservedTime findReservedTimeByDate(LocalDateTime date);
 	
 	boolean existsByDate(LocalDateTime date);
 }
