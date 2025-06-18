@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,13 +142,14 @@ public class ScheduleService {
 	}
 	
 	private boolean verifyFreeTime(ReservedTime reservedTime) {
-		LocalDateTime date = reservedTime.getDate();
-		LocalTime time = date.toLocalTime();
 		
-		List<FreeTimesResponseDTO> freeTimes = findAllFreeTimes(reservedTime.getDate().format(sdf1));
-		
-		return freeTimes.stream()
-		.anyMatch(freeTime -> freeTime.getTime().equals(time.format(sdf2)) && reservedTime.getBarber().getName().equals(freeTime.getBarberName()));
+		Optional<ReservedTime> rt = reservedTimeRepository.findReservedTimeByBarberIdAndDate(reservedTime.getBarber().getId(),reservedTime.getDate());
+		  
+		if(rt.isEmpty()) {
+			  return true;
+		  }
+		  
+		return false;	    
 	}
 	
 	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<FreeTimesResponseDTO> freeTimes) {

@@ -3,6 +3,7 @@ package com.buthdev.demo.repositories;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +20,8 @@ public interface ReservedTimeRepository extends JpaRepository<ReservedTime, Long
 	
 	@Query("SELECT r FROM ReservedTime r WHERE r.barber.id = :barberId AND CAST(r.date AS date) = :date ORDER BY r.date ASC")
     List<ReservedTime> findAllReservedTimeByBarberIdAndDate(@Param("barberId") Long barberId, @Param("date") LocalDate date);
+	
+	Optional<ReservedTime> findReservedTimeByBarberIdAndDate(Long id, LocalDateTime date);
 	
 	public List<ReservedTime> findAllReservedTimeByDateBefore(LocalDateTime date);
 	
