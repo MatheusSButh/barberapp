@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,13 +32,13 @@ public class ScheduleService {
 	@Autowired
 	UserService userService;
 	
-	@Autowired 
+	@Autowired
 	private BarberRepository barberRepository;
 	
-	@Autowired 
+	@Autowired
 	private BarberService barberService;
 
-	@Autowired 
+	@Autowired
 	private ReservedTimeConverter reservedTimeConverter;
 
 	private final LocalTime endOfDay = LocalTime.of(17, 59);
@@ -94,6 +95,7 @@ public class ScheduleService {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
 		List<Barber> barbers = barberRepository.findAll();
 		
+		
 		for(Barber barber : barbers) {
 			List<ReservedTime> barberReservedTimes = reservedTimeRepository.findAllReservedTimeByBarberIdAndDate(barber.getId() ,LocalDate.parse(date, sdf1));
 		
@@ -108,29 +110,21 @@ public class ScheduleService {
 	
 	private List<FreeTimesResponseDTO> getFreeTimes(List<ReservedTime> reservedTimes, Long id) {
 		List<LocalTime> timeSlots = generateTimeSlots();
-		List<String> freeTimes = new ArrayList<>();
-		List<LocalTime> busyTimes = new ArrayList<>();
-		List<FreeTimesResponseDTO> barberFreeTimes = new ArrayList<>();
+
+		List<LocalTime> busyTimes = reservedTimes.stream()
+				.map(rt -> rt.getDate().toLocalTime())
+				.collect(Collectors.toList());
 		
-		for(ReservedTime rt : reservedTimes) {
-			LocalDateTime reservedTime = rt.getDate();
-		
-			busyTimes.add(reservedTime.toLocalTime());
-		}
-		
-		for(LocalTime slot : timeSlots) {
-			if(!busyTimes.contains(slot)) {
-				freeTimes.add(slot.format(sdf2));
-			}
-		}
+		List<String> freeTimes = timeSlots.stream()
+				.filter(slot -> !busyTimes.contains(slot))
+				.map(slot -> slot.format(sdf2))
+				.collect(Collectors.toList());
+			
 		Barber barber = barberService.findById(id);
 		
-		for(String freeTime : freeTimes) {
-			FreeTimesResponseDTO freeTimeResponseDto = new FreeTimesResponseDTO(freeTime, barber.getName());
-			barberFreeTimes.add(freeTimeResponseDto);
-		}
-		
-		return barberFreeTimes;
+		return freeTimes.stream()
+				.map(freeTime -> new FreeTimesResponseDTO(freeTime, barber.getName()))
+				.collect(Collectors.toList());
 	}
 
 	private List<LocalTime> generateTimeSlots() {
