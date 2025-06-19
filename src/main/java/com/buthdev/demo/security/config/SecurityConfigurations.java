@@ -22,7 +22,10 @@ public class SecurityConfigurations {
 				.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+						.requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 						.requestMatchers("/schedule/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
 						.anyRequest().permitAll()
 						)
 				.build();

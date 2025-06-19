@@ -10,5 +10,5 @@ import lombok.Setter;
 public class UserResponseDTO {
 
 	private String name;
-	private String phone;
+	private String email;
 }
