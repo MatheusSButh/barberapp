@@ -18,18 +18,18 @@ public interface ReservedTimeRepository extends JpaRepository<ReservedTime, Long
 	@Query("SELECT r FROM ReservedTime r WHERE CAST(r.date AS date) = :date")
 	List<ReservedTime> findAllReservedTimeByDate(@Param("date") LocalDate date);
 	
-	@Query("SELECT r FROM ReservedTime r WHERE r.barber.id = :barberId AND CAST(r.date AS date) = :date ORDER BY r.date ASC")
-    List<ReservedTime> findAllReservedTimeByBarberIdAndDate(@Param("barberId") Long barberId, @Param("date") LocalDate date);
+	@Query("SELECT r FROM ReservedTime r WHERE r.barber.id = :barberId AND CAST(r.date AS date) = :date AND r.status = 0 ORDER BY r.date ASC")
+    List<ReservedTime> findAllValidByBarberIdAndDate(@Param("barberId") Long barberId, @Param("date") LocalDate date);
 	
 	@Query("SELECT r FROM ReservedTime r WHERE status = 0")
 	List <ReservedTime> findAllValidReservedTime();
 	
+	@Query("SELECT r FROM ReservedTime r WHERE r.user.email = :email AND r.date = :date")
+	ReservedTime findReservedTimeByUserEmailAndDate(LocalDateTime date, String email);
+	
 	Optional<ReservedTime> findReservedTimeByBarberIdAndDate(Long id, LocalDateTime date);
 	
 	List<ReservedTime> findAllReservedTimeByDateBefore(LocalDateTime date);
-	
-	@Query("SELECT r FROM ReservedTime r WHERE r.user.email = :email AND r.date = :date")
-	ReservedTime findReservedTimeByUserEmailAndDate(LocalDateTime date, String email);
 	
 	boolean existsByDate(LocalDateTime date);
 }

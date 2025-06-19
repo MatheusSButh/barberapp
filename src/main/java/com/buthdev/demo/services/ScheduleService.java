@@ -112,7 +112,7 @@ public class ScheduleService {
 		
 		
 		for(Barber barber : barbers) {
-			List<ReservedTime> barberReservedTimes = reservedTimeRepository.findAllReservedTimeByBarberIdAndDate(barber.getId() ,LocalDate.parse(date, sdf1));
+			List<ReservedTime> barberReservedTimes = reservedTimeRepository.findAllValidByBarberIdAndDate(barber.getId() ,LocalDate.parse(date, sdf1));
 		
 			List<FreeTimesResponseDTO> freeTimes = getFreeTimes(barberReservedTimes, barber.getId());
 			
