@@ -22,6 +22,7 @@ import com.buthdev.demo.exceptions.UnavailableDateException;
 import com.buthdev.demo.model.Barber;
 import com.buthdev.demo.model.ReservedTime;
 import com.buthdev.demo.model.User;
+import com.buthdev.demo.model.enums.ReservedTimeStatus;
 import com.buthdev.demo.repositories.BarberRepository;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
 import com.buthdev.demo.services.converters.ReservedTimeConverter;
@@ -78,6 +79,18 @@ public class ScheduleService {
 	public void deleteReservedTime(Long id) {
 		findById(id);
 		reservedTimeRepository.deleteById(id);
+	}
+	
+	public void cancelReservedTimeByDate(String date, UserDetails userDetails) {
+		ReservedTime reservedTime = reservedTimeRepository.findReservedTimeByUserEmailAndDate(LocalDateTime.parse(date, sdf), userDetails.getUsername());
+
+		String reservedTimeUser = reservedTime.getUser().getEmail();
+		if(!reservedTimeUser.equals(userDetails.getUsername())) {
+			throw new InvalidDateException(0);
+		}
+		
+		reservedTime.setStatus(ReservedTimeStatus.INVALID);
+		reservedTimeRepository.save(reservedTime);
 	}
 	
 	public List<ReservedTimeResponseDTO> findAllReservedTimeByDate(String date){
@@ -142,15 +155,18 @@ public class ScheduleService {
 		return currentSlots;
 	}
 	
+	
 	private void verifyFreeTime(ReservedTime reservedTime) {
 		Optional<ReservedTime> rt = reservedTimeRepository.findReservedTimeByBarberIdAndDate(reservedTime.getBarber().getId(),reservedTime.getDate());
 		List<LocalTime> slots = generateTimeSlots();
 		
-		if(!rt.isEmpty() || reservedTime.getDate().isBefore(LocalDateTime.now()) || !slots.contains(reservedTime.getDate().toLocalTime())) {
+		if(!rt.isEmpty() && rt.get().getStatus().equals(ReservedTimeStatus.VALID)) {
+			throw new UnavailableDateException();
+		}
+		
+		if(reservedTime.getDate().isBefore(LocalDateTime.now()) || !slots.contains(reservedTime.getDate().toLocalTime())) {
 			throw new UnavailableDateException();
 		  }
-		  
-		return;	    
 	}
 	
 	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<FreeTimesResponseDTO> freeTimes) {

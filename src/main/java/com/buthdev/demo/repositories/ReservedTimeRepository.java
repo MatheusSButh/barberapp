@@ -28,7 +28,8 @@ public interface ReservedTimeRepository extends JpaRepository<ReservedTime, Long
 	
 	List<ReservedTime> findAllReservedTimeByDateBefore(LocalDateTime date);
 	
-	ReservedTime findReservedTimeByDate(LocalDateTime date);
+	@Query("SELECT r FROM ReservedTime r WHERE r.user.email = :email AND r.date = :date")
+	ReservedTime findReservedTimeByUserEmailAndDate(LocalDateTime date, String email);
 	
 	boolean existsByDate(LocalDateTime date);
 }

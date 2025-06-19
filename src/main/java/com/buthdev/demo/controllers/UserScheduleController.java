@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,5 +37,12 @@ public class UserScheduleController {
 	@GetMapping(value = "/times")
 	public ResponseEntity<List<FreeTimesResponseDTO>> findAllFreeTimes(@RequestParam String date) {
 		return ResponseEntity.ok().body(scheduleService.findAllFreeTimes(date));
+	}
+	
+	@PutMapping(value = "/cancel")
+	public ResponseEntity<ReservedTime> cancelReservedTime(@RequestParam String date, @AuthenticationPrincipal UserDetails userDetails) {
+		scheduleService.cancelReservedTimeByDate(date, userDetails);
+		
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
