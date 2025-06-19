@@ -14,6 +14,7 @@ import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
 import com.buthdev.demo.exceptions.InvalidDateException;
 import com.buthdev.demo.model.ReservedTime;
+import com.buthdev.demo.model.User;
 import com.buthdev.demo.model.enums.ReservedTimeStatus;
 import com.buthdev.demo.services.BarberService;
 import com.buthdev.demo.services.UserService;
@@ -35,7 +36,7 @@ public class ReservedTimeConverter {
 	
 	DateTimeFormatter sdf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 	
-	public ReservedTime convertToReservedTime(ReservedTimeRequestDTO reservedTimeDTO) {
+	public ReservedTime convertToReservedTime(ReservedTimeRequestDTO reservedTimeDTO, User user) {
 		ReservedTime reservedTime = new ReservedTime();
 		
 		try {
@@ -47,7 +48,7 @@ public class ReservedTimeConverter {
 		
 		reservedTime.setService(reservedTimeDTO.service());
 		reservedTime.setStatus(ReservedTimeStatus.VALID);
-		reservedTime.setUser(userService.findById(reservedTimeDTO.userId()));
+		reservedTime.setUser(user);
 		reservedTime.setBarber(barberService.findById(reservedTimeDTO.barberId()));
 		
 		return reservedTime;

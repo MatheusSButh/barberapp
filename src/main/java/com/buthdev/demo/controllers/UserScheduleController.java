@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +27,8 @@ public class UserScheduleController {
 	private ScheduleService scheduleService;
 	
 	@PostMapping
-	public ResponseEntity<ReservedTime> createReservedTime(@RequestBody ReservedTimeRequestDTO reservedTimeDTO) {
-		scheduleService.createReservedTime(reservedTimeDTO);
+	public ResponseEntity<ReservedTime> createReservedTime(@RequestBody ReservedTimeRequestDTO reservedTimeDTO, @AuthenticationPrincipal UserDetails userDetails) {
+		scheduleService.createReservedTime(reservedTimeDTO, userDetails);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}

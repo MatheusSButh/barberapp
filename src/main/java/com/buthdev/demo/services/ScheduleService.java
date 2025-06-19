@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
@@ -20,6 +21,7 @@ import com.buthdev.demo.exceptions.NotFoundException;
 import com.buthdev.demo.exceptions.UnavailableDateException;
 import com.buthdev.demo.model.Barber;
 import com.buthdev.demo.model.ReservedTime;
+import com.buthdev.demo.model.User;
 import com.buthdev.demo.repositories.BarberRepository;
 import com.buthdev.demo.repositories.ReservedTimeRepository;
 import com.buthdev.demo.services.converters.ReservedTimeConverter;
@@ -48,12 +50,11 @@ public class ScheduleService {
 	DateTimeFormatter sdf1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	DateTimeFormatter sdf2 = DateTimeFormatter.ofPattern("HH:mm");
 
-	public ReservedTime createReservedTime(ReservedTimeRequestDTO reservedTimeDto) {
-		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto);
+	public ReservedTime createReservedTime(ReservedTimeRequestDTO reservedTimeDto, UserDetails userDetails) {
+		User user = userService.findUserByEmail(userDetails.getUsername());
+		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto, user);
 
-		if (!verifyFreeTime(reservedTime) || LocalDateTime.parse(reservedTimeDto.date(), sdf).isBefore(LocalDateTime.now())) {
-            throw new UnavailableDateException();
-        }
+		verifyFreeTime(reservedTime);
 		
 		return reservedTimeRepository.save(reservedTime);
 	}
@@ -141,15 +142,15 @@ public class ScheduleService {
 		return currentSlots;
 	}
 	
-	private boolean verifyFreeTime(ReservedTime reservedTime) {
-		
+	private void verifyFreeTime(ReservedTime reservedTime) {
 		Optional<ReservedTime> rt = reservedTimeRepository.findReservedTimeByBarberIdAndDate(reservedTime.getBarber().getId(),reservedTime.getDate());
-		  
-		if(rt.isEmpty()) {
-			  return true;
+		List<LocalTime> slots = generateTimeSlots();
+		
+		if(!rt.isEmpty() || reservedTime.getDate().isBefore(LocalDateTime.now()) || !slots.contains(reservedTime.getDate().toLocalTime())) {
+			throw new UnavailableDateException();
 		  }
 		  
-		return false;	    
+		return;	    
 	}
 	
 	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<FreeTimesResponseDTO> freeTimes) {
