@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buthdev.demo.dtos.request.RescheduleRequestDTO;
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.FreeTimesResponseDTO;
 import com.buthdev.demo.model.ReservedTime;
@@ -42,6 +43,13 @@ public class UserScheduleController {
 	@PutMapping(value = "/cancel")
 	public ResponseEntity<ReservedTime> cancelReservedTime(@RequestParam String date, @AuthenticationPrincipal UserDetails userDetails) {
 		scheduleService.cancelReservedTimeByDate(date, userDetails);
+		
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+	
+	@PutMapping(value = "/reschedule")
+	public ResponseEntity<ReservedTime> rescheduleReservedTime(@RequestBody RescheduleRequestDTO rescheduleRequestDTO, @AuthenticationPrincipal UserDetails userDetails) {
+		scheduleService.rescheduleReservedTime(rescheduleRequestDTO, userDetails);
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

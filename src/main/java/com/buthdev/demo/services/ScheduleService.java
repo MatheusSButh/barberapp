@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.buthdev.demo.dtos.request.RescheduleRequestDTO;
 import com.buthdev.demo.dtos.request.ReservedTimeRequestDTO;
 import com.buthdev.demo.dtos.response.FreeTimesResponseDTO;
 import com.buthdev.demo.dtos.response.ReservedTimeResponseDTO;
@@ -55,7 +57,7 @@ public class ScheduleService {
 		User user = userService.findUserByEmail(userDetails.getUsername());
 		ReservedTime reservedTime = reservedTimeConverter.convertToReservedTime(reservedTimeDto, user);
 
-		verifyFreeTime(reservedTime);
+		verifyFreeTime(reservedTime.getBarber().getId(), reservedTime.getDate());
 		
 		return reservedTimeRepository.save(reservedTime);
 	}
@@ -90,6 +92,20 @@ public class ScheduleService {
 		}
 		
 		reservedTime.setStatus(ReservedTimeStatus.INVALID);
+		reservedTimeRepository.save(reservedTime);
+	}
+	
+	public void rescheduleReservedTime(RescheduleRequestDTO rescheduleRequestDTO, UserDetails userDetails) {
+		LocalDateTime currentDate = LocalDateTime.parse(rescheduleRequestDTO.currentDate(), sdf);
+		LocalDateTime newDate = LocalDateTime.parse(rescheduleRequestDTO.date(), sdf);
+		
+		ReservedTime reservedTime = reservedTimeRepository.findReservedTimeByUserEmailAndDate(currentDate, userDetails.getUsername());
+		
+		verifyFreeTime(rescheduleRequestDTO.barberId(), newDate);
+		reservedTime.setBarber(barberService.findById(rescheduleRequestDTO.barberId()));
+		reservedTime.setService(rescheduleRequestDTO.service());
+		reservedTime.setDate(newDate);
+		
 		reservedTimeRepository.save(reservedTime);
 	}
 	
@@ -156,17 +172,13 @@ public class ScheduleService {
 	}
 	
 	
-	private void verifyFreeTime(ReservedTime reservedTime) {
-		Optional<ReservedTime> rt = reservedTimeRepository.findReservedTimeByBarberIdAndDate(reservedTime.getBarber().getId(),reservedTime.getDate());
+	private void verifyFreeTime(Long barberId, LocalDateTime date) {
+		Optional<ReservedTime> rt = reservedTimeRepository.findReservedTimeByBarberIdAndDate(barberId, date);
 		List<LocalTime> slots = generateTimeSlots();
 		
-		if(!rt.isEmpty() && rt.get().getStatus().equals(ReservedTimeStatus.VALID)) {
-			throw new UnavailableDateException();
-		}
+		if(!rt.isEmpty() && rt.get().getStatus().equals(ReservedTimeStatus.VALID)) { throw new UnavailableDateException(); }
 		
-		if(reservedTime.getDate().isBefore(LocalDateTime.now()) || !slots.contains(reservedTime.getDate().toLocalTime())) {
-			throw new UnavailableDateException();
-		  }
+		if(date.isBefore(LocalDateTime.now()) || !slots.contains(date.toLocalTime())) { throw new InvalidDateException(0); }
 	}
 	
 	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<FreeTimesResponseDTO> freeTimes) {
