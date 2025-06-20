@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -84,12 +83,8 @@ public class ScheduleService {
 	}
 	
 	public void cancelReservedTimeByDate(String date, UserDetails userDetails) {
-		ReservedTime reservedTime = reservedTimeRepository.findReservedTimeByUserEmailAndDate(LocalDateTime.parse(date, sdf), userDetails.getUsername());
-
-		String reservedTimeUser = reservedTime.getUser().getEmail();
-		if(!reservedTimeUser.equals(userDetails.getUsername())) {
-			throw new InvalidDateException(0);
-		}
+		ReservedTime reservedTime = reservedTimeRepository.findReservedTimeByUserEmailAndDate(LocalDateTime.parse(date, sdf), userDetails.getUsername())
+				.orElseThrow(() -> new NotFoundException());
 		
 		reservedTime.setStatus(ReservedTimeStatus.INVALID);
 		reservedTimeRepository.save(reservedTime);
@@ -99,7 +94,8 @@ public class ScheduleService {
 		LocalDateTime currentDate = LocalDateTime.parse(rescheduleRequestDTO.currentDate(), sdf);
 		LocalDateTime newDate = LocalDateTime.parse(rescheduleRequestDTO.date(), sdf);
 		
-		ReservedTime reservedTime = reservedTimeRepository.findReservedTimeByUserEmailAndDate(currentDate, userDetails.getUsername());
+		ReservedTime reservedTime = reservedTimeRepository.findReservedTimeByUserEmailAndDate(currentDate, userDetails.getUsername())
+				.orElseThrow(() -> new NotFoundException());
 		
 		verifyFreeTime(rescheduleRequestDTO.barberId(), newDate);
 		reservedTime.setBarber(barberService.findById(rescheduleRequestDTO.barberId()));
