@@ -122,13 +122,11 @@ public class ScheduleService {
 		List<FreeTimesResponseDTO> freeTimesDto = new ArrayList<>();
 		List<Barber> barbers = barberRepository.findAll();
 		
-		
 		for(Barber barber : barbers) {
 			List<ReservedTime> barberReservedTimes = reservedTimeRepository.findAllValidByBarberIdAndDate(barber.getId() ,LocalDate.parse(date, sdf1));
-		
 			List<FreeTimesResponseDTO> freeTimes = getFreeTimes(barberReservedTimes, barber.getId());
 			
-			freeTimesDto.addAll(convertToFreeTimesDto(freeTimes));	
+			freeTimesDto.addAll(freeTimes);	
 		}
 		
 		return freeTimesDto;
@@ -175,15 +173,5 @@ public class ScheduleService {
 		if(!rt.isEmpty() && rt.get().getStatus().equals(ReservedTimeStatus.VALID)) { throw new UnavailableDateException(); }
 		
 		if(date.isBefore(LocalDateTime.now()) || !slots.contains(date.toLocalTime())) { throw new InvalidDateException(0); }
-	}
-	
-	private List<FreeTimesResponseDTO> convertToFreeTimesDto(List<FreeTimesResponseDTO> freeTimes) {
-		
-		return freeTimes.stream()
-		.map(freeTime -> {
-			FreeTimesResponseDTO freeTimeDto = new FreeTimesResponseDTO(freeTime.getTime(), freeTime.getBarberName());
-
-			return freeTimeDto;
-		}).collect(Collectors.toList());
 	}
 }
