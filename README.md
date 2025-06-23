@@ -72,6 +72,7 @@ cd nome-da-pasta</code></pre>
             <p><strong>Configure as variáveis de ambiente:</strong><br>
             Crie um arquivo <code>.env</code> na raiz do projeto com as credenciais para o banco de dados.</p>
             <pre><code class="language-properties">DB_URL=jdbc:postgresql://db:5432/schedule
+DB_USERNAME=postgres
 DB_PASSWORD=coloque_sua_senha_aqui
 JWT_SECRET=coloque_seu_secret_aqui</code></pre>
         </li>
