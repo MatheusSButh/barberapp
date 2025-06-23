@@ -34,6 +34,7 @@ public class SecurityConfigurations {
 						.requestMatchers("/schedule/**").hasRole("ADMIN")
 						.requestMatchers("/barbers/**").hasRole("ADMIN")
 						.requestMatchers("/users/**").hasRole("ADMIN")
+						.requestMatchers("/v3/api-docs/**", "swagger-ui/**", "swagger-ui/html").permitAll()
 						.anyRequest().permitAll()
 						)
 				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
