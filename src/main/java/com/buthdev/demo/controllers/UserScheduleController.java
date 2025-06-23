@@ -35,7 +35,7 @@ public class UserScheduleController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
-	@GetMapping(value = "/times")
+	@GetMapping(value = "/freeTimes")
 	public ResponseEntity<List<FreeTimesResponseDTO>> findAllFreeTimes(@RequestParam String date) {
 		return ResponseEntity.ok().body(scheduleService.findAllFreeTimes(date));
 	}
