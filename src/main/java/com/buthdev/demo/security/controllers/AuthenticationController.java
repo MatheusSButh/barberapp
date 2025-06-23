@@ -17,8 +17,12 @@ import com.buthdev.demo.model.User;
 import com.buthdev.demo.repositories.UserRepository;
 import com.buthdev.demo.security.services.TokenService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping(value = "auth")
+@Tag(name = "Authetication", description = "Endpoints to register and login. Don't require any role.")
 public class AuthenticationController {
 
 	@Autowired
@@ -30,6 +34,7 @@ public class AuthenticationController {
 	@Autowired
 	TokenService tokenService;
 	
+	@Operation(summary = "Login in the system", description = "Authenticate the user.")
 	@PostMapping(value = "/login")
 	public ResponseEntity login(@RequestBody AuthenticationRequestDTO authDto) {
 		var usernamePassword = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
@@ -40,6 +45,7 @@ public class AuthenticationController {
 		return ResponseEntity.ok(new LoginResponseDTO(token));
 	}
 	
+	@Operation(summary = "Register in the system", description = "Registers a new user in the system.")
 	@PostMapping(value = "/register")
 	public ResponseEntity register(@RequestBody RegisterRequestDTO registerDto) {
 		if (userRepository.findByEmail(registerDto.email()) != null) {
