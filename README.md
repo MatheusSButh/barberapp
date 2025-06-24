@@ -62,7 +62,11 @@
         </li>
     </ul>
     <h2>🛠️ Configuração e Execução</h2>
-    <ol>
+                    <p><strong>Ambiente de Produção (Online):</strong><br>
+                    A API já está disponível na internet, hospedada na Render. Você pode acessá-la e testá-la diretamente pela documentação interativa do Swagger no link:  <strong><a href="https://barber-api-5f07.onrender.com/swagger-ui.html" target="_blank">https://barber-api-5f07.onrender.com/swagger-ui.html</a></strong>
+                        <p></p>
+                    <em><strong>Atenção:</strong> Por ser um plano gratuito, o primeiro acesso ao link online pode demorar até um minuto para "acordar" o servidor.</em></p>
+        <ol>
         <li>
             <p><strong>Clone o repositório:</strong></p>
             <pre><code>git clone https://github.com/MatheusSButh/barberapp
