@@ -1,6 +1,6 @@
 <body>
     <h1>💈 Barber API</h1>
-    <p>API para agendamento e gerenciamento de serviços de uma barbearia. Este projeto permite que usuários se cadastrem, façam login, visualizem horários disponíveis e agendem, cancelem ou remarquem seus atendimentos. Também permite os barbeiros se organizarem e realizarem terem acesso a agenda e seus compromissos.</p>
+    <p>API para agendamento e gerenciamento de serviços de uma barbearia. Este projeto permite que usuários se cadastrem, façam login, visualizem horários disponíveis, agendem, cancelem ou remarquem seus atendimentos. Também permite que os barbeiros se organizem e tenham acesso a agenda e seus compromissos.</p>
     <h2>🚀 Tecnologias Utilizadas</h2>
     <ul>
         <li>Java 21</li>
